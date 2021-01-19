@@ -1,7 +1,7 @@
-# Federated Learning
+# Awesome of Federated Learning
 
-## 使用说明 
-### Grpc已有配置
+## Developments
+### Grpc defined
 ~~~
 rpc UpdateIdx_uint32(IdxRequest_uint32) returns (IdxResponse_uint32){}
 rpc UpdateGrad_int32(GradRequest_int32) returns (GradResponse_int32){}
@@ -9,35 +9,35 @@ rpc UpdateGrad_float(GradRequest_float) returns (GradResponse_float){}
 rpc DataTrans_int32(DataRequest_int32) returns (DataResponse_int32){}
 ~~~
 
-### 服务端
-1. FlGrpcServer类已实现的方法（服务端的一般操作）
+### Server
+1. FlGrpcServer class:
 ~~~
-# 收集数据
+# collect data
 def process(self, dict_data, handler)
-# 启动服务
+# start server
 def start(self)
 ~~~
-2. 定义自己的Server，继承FlGrpcServer，实现Grpc中定义的函数（数据类型）
+2. Define your own Server, inherit FlGrpcServer, implement the functions define in Grpc
 ~~~
 from Common.Server.fl_grpc_server import FlGrpcServer
 
 class yourServer(FLGrpcServer):
-    # 实现上述Grpc中的方法
+    # implement your func.
     def yourfunc(self, request, context):
         pass
 ~~~
 
-3. 实现具体的hander(处理数据)
+3. implememt your hander
 ~~~
-# 接口定义为
+# define interface
 class YourHandler:
     def computation(self, data_in):
         return data_out
 ~~~
 
-### 客户端
-1. WorkerBase基类实现了单步训练的方法
-2. 定义自己的Woker，继承WorkerBase类
+### Worker
+1. WorkerBase: one pass train
+2. Define your Woker，inherit WorkerBase
 ~~~
 from Common.Node.workerbase import WorkerBase
 
@@ -45,7 +45,7 @@ class YourWorker(WorkerBase):
     def update():
         gradients = super().get_gradients()
         
-        # 定义上传/接收操作
+        # define upload / download fucntion
         
         super().set_gradients()    
     
