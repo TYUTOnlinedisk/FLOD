@@ -22,3 +22,4 @@ port2 = 50002
 mpc_idx_port = 50003
 mpc_grad_port = 50004
 
+grpc_options = [('grpc.max_send_message_length', -1), ('grpc.max_receive_message_length', -1)]

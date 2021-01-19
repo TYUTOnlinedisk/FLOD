@@ -39,7 +39,7 @@ class FlGrpcServer(FL_GrpcServicer):
         return data_upd
 
     def start(self):
-        server = grpc.server(futures.ThreadPoolExecutor(max_workers=10))
+        server = grpc.server(futures.ThreadPoolExecutor(max_workers=10), options=self.config.grpc_options)
         add_FL_GrpcServicer_to_server(self, server)
 
         target = self.address + ":" + str(self.port)

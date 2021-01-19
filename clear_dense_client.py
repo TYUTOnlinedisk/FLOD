@@ -49,7 +49,7 @@ if __name__ == '__main__':
 
     server_grad = config.server1_address + ":" + str(config.port1)
 
-    with grpc.insecure_channel(server_grad) as grad_channel:
+    with grpc.insecure_channel(server_grad, options=config.grpc_options) as grad_channel:
         print("connect success!")
 
         grad_stub = FL_GrpcStub(grad_channel)
