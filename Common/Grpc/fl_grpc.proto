@@ -6,12 +6,23 @@ service FL_Grpc
   rpc UpdateGrad_int32(GradRequest_int32) returns (GradResponse_int32){}
   rpc UpdateGrad_float(GradRequest_float) returns (GradResponse_float){}
   rpc DataTrans_int32(DataRequest_int32) returns (DataResponse_int32){}
+  rpc Update_SignSGD(signSGD_Request) returns (signSGD_Response){}
+}
+
+message signSGD_Request
+{
+  uint32 id = 1;
+  repeated uint32 sgn_ori = 2;
+}
+message signSGD_Response
+{
+  repeated uint32 sgn_upd = 1
 }
 
 message IdxRequest_uint32
 {
   uint32 id = 1;
-  repeated uint32  idx_ori = 2;
+  repeated uint32 idx_ori = 2;
 }
 
 message IdxResponse_uint32
