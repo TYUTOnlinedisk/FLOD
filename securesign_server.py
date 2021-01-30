@@ -1,8 +1,8 @@
-from .Common.Server.fl_grpc_server import FlGrpcServer
-from .Common.Grpc.fl_grpc_pb2 import GradResponse_float
-from .Common.Handler.handler import Handler
-from .Common.Utils.edcode import encode, decode
-import .Common.config as config
+from Common.Server.fl_grpc_server import FlGrpcServer
+from Common.Grpc.fl_grpc_pb2 import GradResponse_float
+from Common.Handler.handler import Handler
+from Common.Utils.edcode import encode, decode
+import Common.config as config
 
 import numpy as np
 

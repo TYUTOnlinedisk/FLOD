@@ -1,17 +1,17 @@
-from .Common.Node.workerbase import WorkerBase
-from .Common.Grpc.fl_grpc_pb2 import GradRequest_float
-from .Common.Utils.edcode import encode, decode
+from Common.Node.workerbase import WorkerBase
+from Common.Grpc.fl_grpc_pb2 import GradRequest_float
+from Common.Utils.edcode import encode, decode
 import torch
 from torch import nn
 
-import .Common.config as config
+import Common.config as config
 
-from .Common.Model.LeNet import LeNet
-from .Common.Utils.data_loader import load_data_fashion_mnist
-from .Common.Utils.set_log import setup_logging
+from Common.Model.LeNet import LeNet
+from Common.Utils.data_loader import load_data_fashion_mnist
+from Common.Utils.set_log import setup_logging
 
 import grpc
-from .Common.Grpc.fl_grpc_pb2_grpc import FL_GrpcStub
+from Common.Grpc.fl_grpc_pb2_grpc import FL_GrpcStub
 
 import argparse
 
