@@ -72,7 +72,7 @@ class WorkerBase(metaclass=ABCMeta):
         idx = 0
         for param in self.model.parameters():
             tmp = self._gradients[self._level_length[idx]:self._level_length[idx + 1]]
-            grad_re = torch.tensor(tmp)
+            grad_re = torch.tensor(tmp, device=self.device)
             grad_re = grad_re.view(param.grad.size())
 
             param.grad = grad_re
