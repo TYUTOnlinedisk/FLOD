@@ -93,4 +93,4 @@ def load_data_cifar10(args, root='./Data/CIFAR10'):
 
 if __name__ == '__main__':
     args = args_parser()
-    load_data_fashion_mnist(args, root='../Data/FashionMNIST')
+    load_data_mnist(args, root='../Data/MNIST')

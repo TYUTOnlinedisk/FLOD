@@ -4,7 +4,7 @@ def args_parser():
     parser = argparse.ArgumentParser()
     # federated arguments
     parser.add_argument('--epochs', type=int, default=1, help="rounds of training")
-    parser.add_argument('--num_workers', type=int, default=5, help="number of users: N")
+    parser.add_argument('--num_workers', type=int, default=10, help="number of users: N")
     parser.add_argument('--E', type=int, default=1, help="the number of local updates: E")
     parser.add_argument('--batch_size', type=int, default=256, help="local batch size: B")
     parser.add_argument('--lr', type=float, default=0.01, help="learning rate")

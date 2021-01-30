@@ -1,5 +1,5 @@
 from Common.Node.workerbase import WorkerBase
-from Common.Grpc.fl_grpc_pb2 import GradRequest_float
+from Common.Grpc.fl_grpc_pb2 import signSGD_Request
 from Common.Utils.edcode import encode, decode
 import torch
 from torch import nn
@@ -18,7 +18,7 @@ import argparse
 
 class ClearSignSGDClient(WorkerBase):
     def __init__(self, client_id, model, loss_func, train_iter, test_iter, config, optimizer, grad_stub):
-        super(ClearDenseClient, self).__init__(model=model, loss_func=loss_func, train_iter=train_iter,
+        super(ClearSignSGDClient, self).__init__(model=model, loss_func=loss_func, train_iter=train_iter,
                                                test_iter=test_iter, config=config, optimizer=optimizer)
         self.client_id = client_id
         self.grad_stub = grad_stub
@@ -32,9 +32,9 @@ class ClearSignSGDClient(WorkerBase):
 
 
 if __name__ == '__main__':
-    parser = argparse.ArgumentParser(description='clear_dense_client')
+    parser = argparse.ArgumentParser(description='signSGD_client')
     parser.add_argument('-i', type=int, help="client's id")
-    parser.add_argument('-t', type=int, default=10, help="train times locally")
+    parser.add_argument('-t', type=int, default=1, help="train passes locally")
 
     args = parser.parse_args()
 
@@ -42,10 +42,11 @@ if __name__ == '__main__':
     setup_logging(default_path=yaml_path)
 
     model = LeNet()
-    batch_size = 512
-    train_iter, test_iter = load_data_fashion_mnist(batch_size=batch_size, root='Data/FashionMNIST')
-    lr = 0.001
-    optimizer = torch.optim.Adam(model.parameters(), lr=lr)
+    if args.id == 0:
+        train_iter, test_iter = load_data_mnist(id=args.id, batch = args.batch_size, path = args.path)
+    else:
+        train_iter, test_iter = load_data_mnist(id=args.id, batch = args.batch_size, path = args.path), None
+    optimizer = torch.optim.Adam(model.parameters(), lr=args.lr)
     loss_func = nn.CrossEntropyLoss()
 
     server_grad = config.server1_address + ":" + str(config.port1)
@@ -59,4 +60,4 @@ if __name__ == '__main__':
                                   test_iter=test_iter, config=config, optimizer=optimizer, grad_stub=sgn_stub)
 
         client.fl_train(times=args.t)
-        client.write_acc_record(fpath="Eva/clear_avg_acc.txt", info="clear_avg_acc_worker")
+        client.write_acc_record(fpath="Eva/clear_signSGD_acc.txt", info="clear_signSGD_acc_worker")

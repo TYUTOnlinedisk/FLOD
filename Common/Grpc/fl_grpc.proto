@@ -16,7 +16,7 @@ message signSGD_Request
 }
 message signSGD_Response
 {
-  repeated uint32 sgn_upd = 1
+  repeated uint32 sgn_upd = 1;
 }
 
 message IdxRequest_uint32
