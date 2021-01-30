@@ -24,28 +24,33 @@ class ClearSignSGDServer(FlGrpcServer):
 
 
 class SignSGDGradientHandler(Handler):
-    def __init__(self, num_workers, model, root_data, lr):
+    def __init__(self, num_workers):#, model, root_data, lr):
         super(SignSGDGradientHandler, self).__init__()
         self.num_workers = num_workers
-        self.model = model
-        self.root_data = root_data
-        self.lr = lr 
+        #self.model = model
+        #self.root_data = root_data
+        #self.lr = lr 
     
     def root_train(root_data, model):
         pass
 
     def computation(self, data_in):
-        self.root_grad = root_train(self.root_data, self.model)
-        grad_in = np.array(data_in).reshape((self.num_workers, -1)).sum(axis=0)
+        #self.root_grad = root_train(self.root_data, self.model)
+        #grad_in = np.array(data_in).reshape((self.num_workers, -1)).sum(axis=0)
+        grad_in = np.array(data_in).reshape((self.num_workers, -1))
+        for i in range(1,self.num_workers):
+            delta = np.logical_xor(grad_in[0], grad_in[i]).astype(int).sum()
+            print(delta * 1.0 / grad_in.shape[1])
+        return
         grad_out = np.where(grad_in >= (self.num_workers // 2), 1, 0)
         return encode(grad_out.tolist())
 
 
 if __name__ == "__main__":
-    # cuda set seed
-    LeNet = LeNet()
-    root_data = # load root data
-    gradient_handler = SignSGDGradientHandler(num_workers=config.num_workers, model=LeNet, root_data=, lr=0.001)
+    # cud
+    #LeNet = LeNet()
+    #root_data = # load root data
+    gradient_handler = SignSGDGradientHandler(num_workers=config.num_workers)#, model=LeNet, root_data=, lr=0.001)
 
     clear_server = ClearSignSGDServer(address=config.server1_address, port=config.port1, config=config,
                                     handler=gradient_handler)
