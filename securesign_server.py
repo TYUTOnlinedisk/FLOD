@@ -99,7 +99,8 @@ if __name__ == "__main__":
     args = args_parser()
     model = torch.load('./Model/LeNet')
     loss_func = nn.CrossEntropyLoss()
-    root_data = torch.utils.data.DataLoader('./Data/MNIST/server_data.pt', batch_size=100, shuffle=True, num_workers=0)
+    data_path = torch.load('./Data/MNIST/server_data.pt')
+    root_data = torch.utils.data.DataLoader(data_path, batch_size=100, shuffle=True, num_workers=0)
     opt = torch.optim.Adam(model.parameters(), lr=agrs.lr)
     gradient_handler = SignSGDGradientHandler(num_workers=config.num_workers, model=model, root_data=root_data, optimizer = opt, loss_func=loss_func)
 
