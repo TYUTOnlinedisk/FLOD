@@ -77,7 +77,7 @@ class SignSGDGradientHandler(Handler):
         #self.root_grad = root_train(self.root_data, self.model)
         grad_in = np.array(data_in).reshape((self.num_workers, -1))
         root_sgn = self.root_grad_comp()
-        assert grad_in.shape[1] = root_sgn.shape[0]
+        assert grad_in.shape[1] == root_sgn.shape[0]
         T = []
         for i in range(self.num_workers):
             hamming_distance = np.logical_xor(root_sgn, grad_in[i]).astype(int).sum(axis=0)
@@ -85,22 +85,26 @@ class SignSGDGradientHandler(Handler):
                 T[i] = 0
             else:
                 T[i] = (self._grad_len // 2 - hamming_distance) / (self._grad_len // 2)
+        
+        print(T)
+        import pdb
+        pdb.set_trace()
         scaler = (1.0 / sum(T[i])) 
         weight_sgn = 0
         for i in range(self.num_workers):
             weight_sgn += T[i] * grad_in[i]
         grad_agg = scaler * weight_sgn  
         self.root_model_update(grad=grad_agg)
-        #grad_out = np.where(grad_in >= (self.num_workers // 2), 1, 0)
-        return encode(grad_agg, BASE=16)
+        grad_out = np.random.randint(0,2, self._grad_len)
+        return encode(grad_out, BASE=16)
 
 
 if __name__ == "__main__":
     args = args_parser()
     model = torch.load('./Model/LeNet')
-    loss_func = nn.CrossEntropyLoss()
+    loss_func = torch.nn.CrossEntropyLoss()
     root_data = torch.utils.data.DataLoader('./Data/MNIST/server_data.pt', batch_size=100, shuffle=True, num_workers=0)
-    opt = torch.optim.Adam(model.parameters(), lr=agrs.lr)
+    opt = torch.optim.Adam(model.parameters(), lr=args.lr)
     gradient_handler = SignSGDGradientHandler(num_workers=config.num_workers, model=model, root_data=root_data, optimizer = opt, loss_func=loss_func)
 
     clear_server = ClearSignSGDServer(address=config.server1_address, port=config.port1, config=config,
