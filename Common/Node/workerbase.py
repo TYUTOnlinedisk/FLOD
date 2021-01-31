@@ -133,10 +133,10 @@ class WorkerBase(metaclass=ABCMeta):
                 n += y.shape[0]
                 batch_count += 1
 
-            if self.test_iter != None:
-                test_acc = evaluate_accuracy(self.test_iter, self.model)
-                self.acc_record += [test_acc]
-                print('epoch %d, loss %.4f, train acc %.3f, test acc %.3f, time %.1f sec'
+                if self.test_iter != None:
+                    test_acc = evaluate_accuracy(self.test_iter, self.model)
+                    self.acc_record += [test_acc]
+                    print('epoch %d, loss %.4f, train acc %.3f, test acc %.3f, time %.1f sec'
                   % (epoch + 1, train_l_sum / batch_count, train_acc_sum / n, test_acc, time.time() - start))
 
     def write_acc_record(self, fpath, info):

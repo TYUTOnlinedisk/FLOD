@@ -25,9 +25,9 @@ class ClearSignSGDClient(WorkerBase):
     def update(self):
         gradients = np.array(super().get_gradients())
         if self.client_id >= 4:
-            sgn = np.random.randint(0,2, self._grad_len).tolist()
-        else:
-            sgn = np.where(gradients>=0, 0, 1).tolist()
+            gradients = np.random.normal(0, 0.1, self._grad_len)
+            
+        sgn = np.where(gradients>=0, 0, 1).tolist()
         res_sgn_upd = self.grad_stub.Update_SignSGD.future(signSGD_Request(id=self.client_id, sgn_ori=encode(sgn)))
         res_sgn = decode(res_sgn_upd.result().sgn_upd)[:self._grad_len]
         res = np.where(np.array(res_sgn)==1, -1.0, 1.0).tolist()
@@ -38,8 +38,8 @@ if __name__ == '__main__':
     args = args_parser()
     yaml_path = 'Log/log.yaml'
     setup_logging(default_path=yaml_path)
-
-    model = LeNet()
+    PATH = './Model/LeNet'
+    model = torch.load(PATH)
     if args.id == 0:
         train_iter, test_iter = load_data_mnist(id=args.id, batch = args.batch_size, path = args.path)
     else:
