@@ -50,8 +50,19 @@ def load_data_mnist(args, root='./Data/MNIST'):
             transforms.ToTensor(),
             transforms.Normalize((0.1307,), (0.3081,))
         ]))
-    num_items = len(mnist_train)// args.num_workers
+    server_data = []
+    server_id = []
+    label = np.ones(10) * 10
+    for i in range(len(mnist_train)):
+        if label[mnist_train[i][1]] > 0:
+            server_data.append(mnist_train[i])
+            label[mnist_train[i][1]] -= 1
+            server_id.append(i)
+        if np.all(label == 0):
+            break
+    num_items = (len(mnist_train)-100)// args.num_workers
     dict_users, all_idxs = {}, [i for i in range(len(mnist_train))]
+    all_idxs = list(set(all_idxs) - set(server_id))
     for i in range(args.num_workers):
         dict_users[i] = set(np.random.choice(all_idxs, num_items, replace=False))
         all_idxs = list(set(all_idxs) - dict_users[i])
@@ -64,6 +75,7 @@ def load_data_mnist(args, root='./Data/MNIST'):
     
     for i in range(args.num_workers):
         torch.save(distributed_mnist_train[i], root+'/'+'mnist_train_'+str(i)+'_.pt')
+    torch.save(server_data, root + '/' + 'server_data.pt')
     #train_iter = torch.utils.data.DataLoader(distributed_mnist_train[0], batch_size=batch_size, shuffle=True, num_workers=0)
     #test_iter = torch.utils.data.DataLoader(mnist_test, batch_size=batch_size, shuffle=True, num_workers=num_workers)
     #return train_iter, test_iter
@@ -93,4 +105,4 @@ def load_data_cifar10(args, root='./Data/CIFAR10'):
 
 if __name__ == '__main__':
     args = args_parser()
-    load_data_mnist(args, root='../Data/MNIST')
+    load_data_mnist(args, root='/home/dy/Awesome_FL/Data/MNIST')

@@ -24,13 +24,16 @@ class ClearSignSGDClient(WorkerBase):
 
     def update(self):
         gradients = np.array(super().get_gradients())
-        if self.client_id >= 4:
-            gradients = np.random.normal(0, 0.1, self._grad_len)
-            
         sgn = np.where(gradients>=0, 0, 1).tolist()
+        if self.client_id >= 10:
+            #gradients = np.random.normal(0, 0.1, self._grad_len)
+            sgn = np.random.randint(0,2,self._grad_len).tolist()
+            
+        
         res_sgn_upd = self.grad_stub.Update_SignSGD.future(signSGD_Request(id=self.client_id, sgn_ori=encode(sgn)))
-        res_sgn = decode(res_sgn_upd.result().sgn_upd)[:self._grad_len]
-        res = np.where(np.array(res_sgn)==1, -1.0, 1.0).tolist()
+        res_sgn = decode(res_sgn_upd.result().sgn_upd, BASE=16)[:self._grad_len]
+        res = (self.config.num_workers - 2.0 * np.array(res_sgn)).tolist()
+        #res = np.where(np.array(res_sgn)==1, -1.0, 1.0).tolist()
         super().set_gradients(gradients=res)
 
 
