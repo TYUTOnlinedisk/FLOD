@@ -17,7 +17,7 @@ class ClearSignSGDServer(FlGrpcServer):
         self.handler = handler
 
     def Update_SignSGD(self, request, context):
-        data_dict = {request.id: decode(request.sgn_ori, BASE=2)}
+        data_dict = {request.id: decode(request.sgn_ori, BASE=2)} # not del the 0-pads
         print("have received:", data_dict.keys())
         rst = super().process(dict_data=data_dict, handler=self.handler.computation)
         return signSGD_Response(sgn_upd=rst)
@@ -56,10 +56,12 @@ class SignSGDGradientHandler(Handler):
         self._grad_len = len(self._gradients)
 
     def root_grad_comp(self):
+        print('1')
         for X, y in self.root_data:
             self.train_step(X, y)
         root_sgn = np.where(np.array(self._gradients)>=0, 0, 1)
         self._gradients = None
+        print('2')
         return root_sgn
 
     def root_model_update(self, grad):
@@ -77,6 +79,8 @@ class SignSGDGradientHandler(Handler):
         #self.root_grad = root_train(self.root_data, self.model)
         grad_in = np.array(data_in).reshape((self.num_workers, -1))
         root_sgn = self.root_grad_comp()
+        import pdb
+        pdb.set_trace()
         assert grad_in.shape[1] == root_sgn.shape[0]
         T = []
         for i in range(self.num_workers):
@@ -87,8 +91,7 @@ class SignSGDGradientHandler(Handler):
                 T[i] = (self._grad_len // 2 - hamming_distance) / (self._grad_len // 2)
         
         print(T)
-        import pdb
-        pdb.set_trace()
+ 
         scaler = (1.0 / sum(T[i])) 
         weight_sgn = 0
         for i in range(self.num_workers):
@@ -103,7 +106,8 @@ if __name__ == "__main__":
     args = args_parser()
     model = torch.load('./Model/LeNet')
     loss_func = torch.nn.CrossEntropyLoss()
-    root_data = torch.utils.data.DataLoader('./Data/MNIST/server_data.pt', batch_size=100, shuffle=True, num_workers=0)
+    data_path = torch.load('./Data/MNIST/server_data.pt')
+    root_data = torch.utils.data.DataLoader(data_path, batch_size=100, shuffle=True, num_workers=0)
     opt = torch.optim.Adam(model.parameters(), lr=args.lr)
     gradient_handler = SignSGDGradientHandler(num_workers=config.num_workers, model=model, root_data=root_data, optimizer = opt, loss_func=loss_func)
 
