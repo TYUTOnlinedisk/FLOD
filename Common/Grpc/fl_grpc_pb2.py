@@ -19,7 +19,7 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   package='',
   syntax='proto3',
   serialized_options=None,
-  serialized_pb=_b('\n\rfl_grpc.proto\".\n\x0fsignSGD_Request\x12\n\n\x02id\x18\x01 \x01(\r\x12\x0f\n\x07sgn_ori\x18\x02 \x03(\r\"#\n\x10signSGD_Response\x12\x0f\n\x07sgn_upd\x18\x01 \x03(\r\"0\n\x11IdxRequest_uint32\x12\n\n\x02id\x18\x01 \x01(\r\x12\x0f\n\x07idx_ori\x18\x02 \x03(\r\"%\n\x12IdxResponse_uint32\x12\x0f\n\x07idx_upd\x18\x01 \x03(\r\"1\n\x11GradRequest_int32\x12\n\n\x02id\x18\x01 \x01(\r\x12\x10\n\x08grad_ori\x18\x02 \x03(\x05\"&\n\x12GradResponse_int32\x12\x10\n\x08grad_upd\x18\x01 \x03(\x05\"1\n\x11GradRequest_float\x12\n\n\x02id\x18\x01 \x01(\r\x12\x10\n\x08grad_ori\x18\x02 \x03(\x02\"&\n\x12GradResponse_float\x12\x10\n\x08grad_upd\x18\x01 \x03(\x02\"1\n\x11\x44\x61taRequest_int32\x12\n\n\x02id\x18\x01 \x01(\r\x12\x10\n\x08\x64\x61ta_ori\x18\x02 \x03(\x05\"&\n\x12\x44\x61taResponse_int32\x12\x10\n\x08\x64\x61ta_upd\x18\x01 \x03(\x05\x32\xbd\x02\n\x07\x46L_Grpc\x12=\n\x10UpdateIdx_uint32\x12\x12.IdxRequest_uint32\x1a\x13.IdxResponse_uint32\"\x00\x12=\n\x10UpdateGrad_int32\x12\x12.GradRequest_int32\x1a\x13.GradResponse_int32\"\x00\x12=\n\x10UpdateGrad_float\x12\x12.GradRequest_float\x1a\x13.GradResponse_float\"\x00\x12<\n\x0f\x44\x61taTrans_int32\x12\x12.DataRequest_int32\x1a\x13.DataResponse_int32\"\x00\x12\x37\n\x0eUpdate_SignSGD\x12\x10.signSGD_Request\x1a\x11.signSGD_Response\"\x00\x62\x06proto3')
+  serialized_pb=_b('\n\rfl_grpc.proto\".\n\x0fsignSGD_Request\x12\n\n\x02id\x18\x01 \x01(\r\x12\x0f\n\x07sgn_ori\x18\x02 \x03(\x05\"#\n\x10signSGD_Response\x12\x0f\n\x07sgn_upd\x18\x01 \x03(\x02\"0\n\x11IdxRequest_uint32\x12\n\n\x02id\x18\x01 \x01(\r\x12\x0f\n\x07idx_ori\x18\x02 \x03(\r\"%\n\x12IdxResponse_uint32\x12\x0f\n\x07idx_upd\x18\x01 \x03(\r\"1\n\x11GradRequest_int32\x12\n\n\x02id\x18\x01 \x01(\r\x12\x10\n\x08grad_ori\x18\x02 \x03(\x05\"&\n\x12GradResponse_int32\x12\x10\n\x08grad_upd\x18\x01 \x03(\x05\"1\n\x11GradRequest_float\x12\n\n\x02id\x18\x01 \x01(\r\x12\x10\n\x08grad_ori\x18\x02 \x03(\x02\"&\n\x12GradResponse_float\x12\x10\n\x08grad_upd\x18\x01 \x03(\x02\"1\n\x11\x44\x61taRequest_int32\x12\n\n\x02id\x18\x01 \x01(\r\x12\x10\n\x08\x64\x61ta_ori\x18\x02 \x03(\x05\"&\n\x12\x44\x61taResponse_int32\x12\x10\n\x08\x64\x61ta_upd\x18\x01 \x03(\x05\x32\xbd\x02\n\x07\x46L_Grpc\x12=\n\x10UpdateIdx_uint32\x12\x12.IdxRequest_uint32\x1a\x13.IdxResponse_uint32\"\x00\x12=\n\x10UpdateGrad_int32\x12\x12.GradRequest_int32\x1a\x13.GradResponse_int32\"\x00\x12=\n\x10UpdateGrad_float\x12\x12.GradRequest_float\x1a\x13.GradResponse_float\"\x00\x12<\n\x0f\x44\x61taTrans_int32\x12\x12.DataRequest_int32\x1a\x13.DataResponse_int32\"\x00\x12\x37\n\x0eUpdate_SignSGD\x12\x10.signSGD_Request\x1a\x11.signSGD_Response\"\x00\x62\x06proto3')
 )
 
 
@@ -41,7 +41,7 @@ _SIGNSGD_REQUEST = _descriptor.Descriptor(
       serialized_options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
       name='sgn_ori', full_name='signSGD_Request.sgn_ori', index=1,
-      number=2, type=13, cpp_type=3, label=3,
+      number=2, type=5, cpp_type=1, label=3,
       has_default_value=False, default_value=[],
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
@@ -72,7 +72,7 @@ _SIGNSGD_RESPONSE = _descriptor.Descriptor(
   fields=[
     _descriptor.FieldDescriptor(
       name='sgn_upd', full_name='signSGD_Response.sgn_upd', index=0,
-      number=1, type=13, cpp_type=3, label=3,
+      number=1, type=2, cpp_type=6, label=3,
       has_default_value=False, default_value=[],
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,

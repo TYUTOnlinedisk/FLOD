@@ -12,11 +12,11 @@ service FL_Grpc
 message signSGD_Request
 {
   uint32 id = 1;
-  repeated uint32 sgn_ori = 2;
+  repeated int32 sgn_ori = 2;
 }
 message signSGD_Response
 {
-  repeated uint32 sgn_upd = 1;
+  repeated float sgn_upd = 1;
 }
 
 message IdxRequest_uint32
