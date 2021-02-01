@@ -1,5 +1,5 @@
 #!/bin/sh
 for i in {0..8}; do
-    python clearsign_client.py --id $i &
+    python clearmedian_client.py --id $i &
 done &
-python clearsign_client.py --id 9
+python clearmedian_client.py --id 9
