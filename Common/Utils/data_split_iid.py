@@ -86,7 +86,20 @@ def load_data_cifar10(args, root='./Data/CIFAR10'):
   
     cifar10_train = torchvision.datasets.CIFAR10(root, train=True, download=True, transform=trans_aug)
     cifar10_test = torchvision.datasets.CIFAR10(root, train=False, download=True, transform=trans_aug)
-    num_items = len(cifar10_train)// args.num_workers # args.num_workers the # of clients
+    server_data = []
+    server_id = []
+    label = np.ones(10) * 10
+    for i in range(len(cifar10_train)):
+        if label[cifar10_train[i][1]] > 0:
+            server_data.append(cifar10_train[i])
+            label[cifar10_train[i][1]] -= 1
+            server_id.append(i)
+        if np.all(label == 0):
+            break
+    num_items = (len(cifar10_train)-100)// args.num_workers
+    dict_users, all_idxs = {}, [i for i in range(len(cifar10_train))]
+    all_idxs = list(set(all_idxs) - set(server_id))
+
     dict_users, all_idxs = {}, [i for i in range(len(cifar10_train))]
     for i in range(args.num_workers):
         dict_users[i] = set(np.random.choice(all_idxs, num_items, replace=False))
@@ -99,10 +112,11 @@ def load_data_cifar10(args, root='./Data/CIFAR10'):
             distributed_cifar10_train[i].append(cifar10_train[dict_users[i][j]])    
     for i in range(args.num_workers):
         torch.save(distributed_cifar10_train[i], root+'/'+'cifar10_train_'+str(i)+'_.pt')
+    torch.save(server_data, root + '/' + 'server_data.pt')
     #train_iter = torch.utils.data.DataLoader(distributed_cifar10_train[0], batch_size=batch_size, shuffle=True, num_workers=num_workers)
     #test_iter = torch.utils.data.DataLoader(cifar10_test, batch_size=batch_size, shuffle=True, num_workers=num_workers)
     
 
 if __name__ == '__main__':
     args = args_parser()
-    load_data_mnist(args, root='/home/dy/Awesome_FL/Data/MNIST')
+    load_data_mnist(args, root='/home/dy/Awesome_FL/Data')
