@@ -30,8 +30,7 @@ class MedianGradientHandler(Handler):
 
     def computation(self, data_in):
         grad_in = np.array(data_in).reshape((self.num_workers, -1))
-        grad_tmp = np.sort(grad_in, axis=0)
-        grad_agg = grad_tmp[self.num_workers // 2]
+        grad_agg = np.median(grad_in, axis=0)
         
         return grad_agg.tolist()
 

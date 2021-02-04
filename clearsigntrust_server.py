@@ -4,6 +4,7 @@ from Common.Handler.handler import Handler
 from Common.Utils.edcode import encode, decode
 import Common.config as config
 from Common.Model.LeNet import LeNet
+from Common.Model.ResNet import ResNet, BasicBlock
 import numpy as np
 import torch
 from Common.Utils.options import args_parser
@@ -92,8 +93,8 @@ class SignSGDGradientHandler(Handler):
         scaler = (1.0 / sum(T)) 
         weight_sgn = 0
         for i in range(self.num_workers):
-            weight_sgn += T[i] * grad_in[i]
-        grad_agg = (1 - 2.0 * scaler * weight_sgn).tolist()
+            weight_sgn += T[i] * (1 - 2 * grad_in[i])
+        grad_agg = (scaler * weight_sgn).tolist()
         self.root_model_update(grad=grad_agg)
         print('model update')
         return grad_agg
@@ -101,9 +102,12 @@ class SignSGDGradientHandler(Handler):
 
 if __name__ == "__main__":
     args = args_parser()
-    model = torch.load('./Model/LeNet')
+    PATH = './Model/ResNet20'
+    device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
+    model = ResNet(BasicBlock, [3,3,3]).to(device)
+    model.load_state_dict(torch.load(PATH))
     loss_func = torch.nn.CrossEntropyLoss()
-    data_path = torch.load('./Data/MNIST/server_data.pt')
+    data_path = torch.load('/home/dy/Data/CIFAR10/server_data.pt')
     root_data = torch.utils.data.DataLoader(data_path, batch_size=100, shuffle=True, num_workers=0)
     opt = torch.optim.Adam(model.parameters(), lr=args.lr)
     gradient_handler = SignSGDGradientHandler(num_workers=config.num_workers, model=model, root_data=root_data, optimizer = opt, loss_func=loss_func)

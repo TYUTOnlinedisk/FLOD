@@ -22,7 +22,7 @@ class WorkerBase(metaclass=ABCMeta):
         # Accuracy record
         self.acc_record = [0]
 
-        self.device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+        self.device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
         self._level_length = None
         self._grad_len = 0
         self._gradients = None

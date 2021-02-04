@@ -30,7 +30,7 @@ class SignSGDGradientHandler(Handler):
     def computation(self, data_in):
         grad_in = np.array(data_in).reshape((self.num_workers, -1))
         grad_tmp = np.sum(grad_in, axis=0)
-        grad_agg = np.where(grad_tmp>0, 1, -1)
+        grad_agg = np.where(grad_tmp>=0, 1, -1)
         
         return grad_agg.tolist()
 
