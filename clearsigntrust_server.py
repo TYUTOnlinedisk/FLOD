@@ -77,7 +77,7 @@ class SignSGDGradientHandler(Handler):
     def computation(self, data_in):
         #self.root_grad = root_train(self.root_data, self.model)
         root_sgn = self.root_grad_comp()
-        grad_in = np.array(data_in).reshape((self.num_workers, -1))
+        grad_in = np.array(data_in).reshape((self.num_workers, -1)).astype(int)
         assert grad_in.shape[1] == root_sgn.shape[0]
         T = []
         for i in range(self.num_workers):
@@ -85,7 +85,7 @@ class SignSGDGradientHandler(Handler):
             #T.append(hamming_distance / self._grad_len)
         
             if hamming_distance_i >= (self._grad_len // 2):
-                T.append(0)
+                T.append(1)
             else:
                 T.append(self._grad_len // 2 - hamming_distance_i)
         

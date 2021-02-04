@@ -6,7 +6,8 @@ import random
 import Common.config as config
 import os
 from Common.Model.LeNet import LeNet
-from Common.Utils.data_loader import load_data_mnist
+from Common.Model.ResNet import ResNet, BasicBlock
+from Common.Utils.data_loader import load_data_mnist, load_data_cifar10
 from Common.Utils.set_log import setup_logging
 from Common.Utils.options import args_parser
 import grpc
@@ -14,9 +15,9 @@ from Common.Grpc.fl_grpc_pb2_grpc import FL_GrpcStub
 import numpy as np
 
 class ClearMedianClient(WorkerBase):
-    def __init__(self, client_id, model, loss_func, train_iter, test_iter, config, optimizer, grad_stub):
+    def __init__(self, client_id, model, loss_func, train_iter, test_iter, config, optimizer, device, grad_stub):
         super(ClearMedianClient, self).__init__(model=model, loss_func=loss_func, train_iter=train_iter,
-                                               test_iter=test_iter, config=config, optimizer=optimizer)
+                                               test_iter=test_iter, config=config, optimizer=optimizer, device=device)
         self.client_id = client_id
         self.grad_stub = grad_stub
 
@@ -30,16 +31,21 @@ class ClearMedianClient(WorkerBase):
 
 if __name__ == '__main__':
     args = args_parser()
+    if args.id < 5:
+        device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
+    else:
+        device = torch.device('cuda:1' if torch.cuda.is_available() else 'cpu')
 
     yaml_path = 'Log/log.yaml'
     setup_logging(default_path=yaml_path)
 
-    PATH = './Model/LeNet'
-    model = torch.load(PATH)
+    PATH = './Model/ResNet20'
+    model = ResNet(BasicBlock, [3,3,3]).to(device)
+    model.load_state_dict(torch.load(PATH))
     if args.id == 0:
-        train_iter, test_iter = load_data_mnist(id=args.id, batch = args.batch_size, path = args.path)
+        train_iter, test_iter = load_data_cifar10(id=args.id, batch = args.batch_size, path = args.path)
     else:
-        train_iter, test_iter = load_data_mnist(id=args.id, batch = args.batch_size, path = args.path), None
+        train_iter, test_iter = load_data_cifar10(id=args.id, batch = args.batch_size, path = args.path), None
     optimizer = torch.optim.Adam(model.parameters(), lr=args.lr)
     loss_func = nn.CrossEntropyLoss()
 
@@ -51,7 +57,7 @@ if __name__ == '__main__':
         grad_stub = FL_GrpcStub(grad_channel)
 
         client = ClearMedianClient(client_id=args.id, model=model, loss_func=loss_func, train_iter=train_iter,
-                                  test_iter=test_iter, config=config, optimizer=optimizer, grad_stub=grad_stub)
+                                  test_iter=test_iter, config=config, optimizer=optimizer, device = device, grad_stub=grad_stub)
 
         client.fl_train(times=args.E)
-        client.write_acc_record(fpath="Eva/clear_median_acc.txt", info="clear_median_acc_worker")
+        client.write_acc_record(fpath="Eva/clear_median_acc_cifar10.txt", info="clear_median_acc_worker_cifar10")
