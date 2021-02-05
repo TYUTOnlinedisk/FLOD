@@ -31,7 +31,7 @@ class SignSGDGradientHandler(Handler):
         self.root_data = root_data
         self.optimizer = optimizer 
         self.loss_func = loss_func
-        self.device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+        self.device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
         self.model = model.to(self.device)
         self._gradients = None
         self._level_length = None

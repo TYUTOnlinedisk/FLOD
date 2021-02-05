@@ -8,9 +8,9 @@ from Common.Utils.evaluate import evaluate_accuracy
 logger = logging.getLogger('client.workerbase')
 
 '''
-This is the worker for sharing the local gradients.
+This is the worker for sharing the local weights.
 '''
-class WorkerBase(metaclass=ABCMeta):
+class WorkerBaseV2(metaclass=ABCMeta):
     def __init__(self, model, loss_func, train_iter, test_iter, config, optimizer):
         self.model = model
         self.loss_func = loss_func
@@ -26,22 +26,22 @@ class WorkerBase(metaclass=ABCMeta):
 
         self.device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
         self._level_length = None
-        self._grad_len = 0
-        self._gradients = None
+        self._weights_len = 0
+        self._weights = None
 
-    def get_gradients(self):
-        """ getting gradients """
-        return self._gradients
+    def get_weights(self):
+        """ getting weights """
+        return self._weights
 
-    def set_gradients(self, gradients):
-        """ setting gradients """
+    def set_weights(self, weights):
+        """ setting weights """
         # try:
-        #     if len(gradients) < self._grad_len:
-        #         raise Exception("gradients length error!")
+        #     if len(weights) < self._weights_len:
+        #         raise Exception("weights length error!")
         # except Exception as e:
         #     logger.error(e)
         # else:
-        self._gradients = gradients
+        self._weights = weights
 
     def train_step(self, x, y):
         """ Find the update gradient of each step in collaborative learning """
@@ -52,8 +52,9 @@ class WorkerBase(metaclass=ABCMeta):
         loss = self.loss_func(y_hat, y)
         self.optimizer.zero_grad()
         loss.backward()
+        self.optimizer.step()
 
-        self._gradients = []
+        self._weights = []
         self._level_length = [0]
 
         for param in self.model.parameters():
@@ -64,7 +65,7 @@ class WorkerBase(metaclass=ABCMeta):
         return loss.cpu().item(), y_hat
 
     def upgrade(self):
-        """ Use the processed gradient to update the gradient """
+        """ Use the processed weights to update the model """
         # try:
         #     if len(self._gradients) != self._grad_len:
         #         raise Exception("gradients is wrong")
@@ -73,14 +74,12 @@ class WorkerBase(metaclass=ABCMeta):
 
         idx = 0
         for param in self.model.parameters():
-            tmp = self._gradients[self._level_length[idx]:self._level_length[idx + 1]]
-            grad_re = torch.tensor(tmp, device=self.device)
-            grad_re = grad_re.view(param.grad.size())
+            tmp = self._weights[self._level_length[idx]:self._level_length[idx + 1]]
+            weights_re = torch.tensor(tmp, device=self.device)
+            weights_re = weights_re.view(param.data.size())
 
-            param.grad = grad_re
+            param.data = weights_re
             idx += 1
-
-        self.optimizer.step()
 
     def train(self):
         """ General local training methods """
